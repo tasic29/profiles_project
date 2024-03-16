@@ -1,6 +1,5 @@
 from django.db import models
-from django.shortcuts import reverse
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.utils.text import slugify
 from django_countries.fields import CountryField
 
@@ -16,13 +15,11 @@ class Profile(models.Model):
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
+        # Left 'Other' choice for inclusivity (you know how it goes nowdays)
         ('O', 'Other'),
-        '''
-        You know that nowdays many people think that doesn't belong to Male or Female, 
-        we left them 'Other' choice just to be politically correct :) / can remove it
-        '''
         ('N', 'Select'),
     )
+
     USER_TYPE_CHOICES = (
         ('private', 'Private Account'),
         ('creator', 'Creator Account'),
@@ -55,7 +52,8 @@ class Profile(models.Model):
     country = CountryField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user.username}"
